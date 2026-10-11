@@ -28,68 +28,16 @@
 <div class="card"><b>ログ</b><div id="log" class="mu"></div></div>
 </main>
 <script type="module">
+import {joinRoom} from "./src/net.js";
 const $=id=>document.getElementById(id);
-const APP_ID="pokemon-quiz-test-hs7k2"; // 本番とは別の文字列にしておく
+const APP_ID="myu-pokemon-quiz"; // 本番とは別の文字列にしておく
 const logEl=$("log");
 const log=m=>{const t=new Date().toTimeString().slice(0,8);logEl.textContent+=`[${t}] ${m}\n`;logEl.scrollTop=logEl.scrollHeight};
 
 let T;
-try{ T=await import("https://cdn.jsdelivr.net/npm/trystero@0.21/+esm"); log("ライブラリ読み込み成功") }
-catch(e){ $("sRun").classList.remove("hide");$("stLib").textContent="失敗";$("stLib").className="ng";log("ライブラリ読み込み失敗: "+e.message) }
-
-const peers=new Map(); // id -> {rtt, type}
-let room,sendPing,sendPong,t0;
-
-function render(){
-  const l=$("plist");l.textContent="";
-  peers.forEach((v,id)=>{
-    const r=document.createElement("div");r.className="row";
-    const a=document.createElement("span");a.textContent=id.slice(0,6)+"…  "+(v.type||"");
-    const b=document.createElement("b");b.textContent=v.rtt!=null?v.rtt+" ms":"—";
-    r.append(a,b);l.append(r);
-  });
-  const n=peers.size;
-  $("stPeer").textContent=n?`${n}人と接続中 ✅`:"相手を探しています…";
-  $("stPeer").className=n?"ok":"mu";
-  $("sPeers").classList.toggle("hide",!n);
-  if(n)$("hint").classList.add("hide");
+try{
+  T=await joinRoom(APP_ID,roomId=$(code).value.trim(),log);
+}catch(e){
+  $("sRun").classList.remove("hide");$("stLib").textContent="失敗";$("stLib").className="ng";log("ライブラリ読み込み失敗: "+e.message) 
 }
-
-async function connType(id){
-  try{
-    const pc=room.getPeers()[id]; if(!pc||!pc.getStats)return;
-    const st=await pc.getStats();let local=null,cand={};
-    st.forEach(r=>{ if(r.type==="local-candidate")cand[r.id]=r.candidateType;
-      if(r.type==="candidate-pair"&&r.state==="succeeded"&&(r.nominated||r.selected))local=r.localCandidateId });
-    const t=cand[local];
-    if(t){peers.get(id).type=t==="relay"?"(中継 TURN)":"(直接 "+t+")";render();log(`${id.slice(0,6)} 接続経路: ${t}`)}
-  }catch(e){}
-}
-
-$("bJoin").onclick=()=>{
-  if(!T)return;
-  const code=$("code").value.trim();if(!code)return;
-  $("sJoin").classList.add("hide");$("sRun").classList.remove("hide");
-  $("me").textContent=T.selfId.slice(0,8)+"…";
-  try{ room=T.joinRoom({appId:APP_ID},"test-"+code) }
-  catch(e){log("joinRoom 失敗: "+e.message);return}
-  log("部屋に参加: test-"+code+"(相手を探しています)");
-  t0=Date.now();
-  let getPing,getPong;
-  [sendPing,getPing]=room.makeAction("ping");
-  [sendPong,getPong]=room.makeAction("pong");
-  getPing((d,id)=>{sendPong(d,id);log(`Ping受信 ← ${id.slice(0,6)}`)});
-  getPong((d,id)=>{const p=peers.get(id);if(p){p.rtt=Date.now()-d.t;render();log(`Pong ${id.slice(0,6)}: ${p.rtt}ms`)}});
-  room.onPeerJoin(id=>{peers.set(id,{rtt:null,type:""});render();log("相手が参加: "+id.slice(0,6));setTimeout(()=>connType(id),2500)});
-  room.onPeerLeave(id=>{peers.delete(id);render();log("相手が退出: "+id.slice(0,6))});
-  setInterval(()=>{
-    const s=Math.floor((Date.now()-t0)/1000);$("el").textContent=s+"秒";
-    if(s>=20&&!peers.size){const h=$("hint");h.classList.remove("hide");
-      h.textContent="20秒たっても相手が見つかりません。相手も同じ合言葉で接続済みか、別のネットワーク(スマホ回線など)でも試してみてください。"}
-  },1000);
-};
-$("bPing").onclick=()=>{
-  if(!peers.size)return;
-  sendPing({t:Date.now()});log("Pingを送信");
-};
 </script></body></html>
