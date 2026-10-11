@@ -5,4 +5,5 @@ export async function joinRoom({APP_ID,roomId,log=console.log}){
     log("ライブラリ読み込み成功");
     const room=T.joinRoom({appId: APP_ID}, "room-"+roomId);
     log("部屋に参加 roomId:"+roomId);
+    return room;
 }
