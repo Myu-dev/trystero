@@ -36,7 +36,7 @@ const log=m=>{const t=new Date().toTimeString().slice(0,8);logEl.textContent+=`[
 
 let T;
 try{
-  T=await joinRoom(APP_ID,roomId=$(code).value.trim(),log);
+  T=await joinRoom(APP_ID,roomId=$("code").value.trim(),log);
 }catch(e){
   $("sRun").classList.remove("hide");$("stLib").textContent="失敗";$("stLib").className="ng";log("ライブラリ読み込み失敗: "+e.message) 
 }
