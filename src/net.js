@@ -13,5 +13,20 @@ export async function joinRoom({APP_ID,roomId,log=console.log}){
     log("ルームに参加 roomId:"+roomId);
     room.onPeerJoin(id=>{log("相手が参加しました id: "+id);});
     room.onPeerLeave(id=>{log("相手が退出しました id: "+id)});
-    return {T,room,selfId};
+
+    const events={};
+    const defineEvent=(name,onReceive)=>{
+        if(events[name])return events[name];
+        const [send,receive]=room.makeAction(name);
+        receive((data,peerId)=>{
+            try{
+                onReceive?.(data,peerId)
+            }catch(e){
+                log(`${name} 受信処理エラー: `${e.message});
+            }
+        });
+        events[name]=(data,to)=>{send(data,to);};
+        return events[name];
+    }
+    return {selfId,room,defineEvent};
 }

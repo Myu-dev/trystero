@@ -22,7 +22,8 @@
 <div class="card hide" id="sPeers">
   <b>接続中の相手</b>
   <div id="plist" style="margin:8px 0"></div>
-  <button id="bPing">Pingを送る(往復時間を測る)</button>
+  <button id="bMessage">Pingを送る(往復時間を測る)</button>
+  <input type="text" id="message">
 </div>
 
 <div class="card"><b>ログ</b><div id="log" class="mu"></div></div>
@@ -43,6 +44,11 @@ try{
   return;
 }
 $("me").textContent=net.selfId;
+const sendMessage=net.defineEvent("message",(data,from)=>{
+  log(`${from}からメッセージを受信: ${data}`);
+});
+sendMessage("Hello");
+$("bMessage").addEventListener("click",()=>{sendMessage($("message").value)});
 }
 startGame();
 </script></body></html>
