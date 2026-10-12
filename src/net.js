@@ -1,7 +1,8 @@
 const TRYSTERO="https://cdn.jsdelivr.net/npm/trystero@0.21/+esm";
 
 export async function joinRoom({APP_ID,roomId,log=console.log}){
-    try{const T=await import(TRYSTERO);}
+    let T;
+    try{T=await import(TRYSTERO);}
     catch(e){throw new Error("ライブラリ読み込み失敗: "+e.message);
     }
     log("ライブラリ読み込み成功");
