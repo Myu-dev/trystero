@@ -10,5 +10,5 @@ export async function joinRoom({APP_ID,roomId,log=console.log}){
     try{room=T.joinRoom({appId: APP_ID}, "room-"+roomId);}
     catch(e){throw new Error("ルーム参加に失敗: "+e.message);}
     log("ルームに参加 roomId:"+roomId);
-    return room;
+    return {T,room};
 }
