@@ -35,15 +35,13 @@ const logEl=$("log");
 const log=m=>{const t=new Date().toTimeString().slice(0,8);logEl.textContent+=`[${t}] ${m}\n`;logEl.scrollTop=logEl.scrollHeight};
 
 async function startGame(params) {
-let room,T;
+let net;
 try{
-  ({room,T}=await joinRoom({APP_ID,roomId:$("code").value.trim(),log}));
+  net=await joinRoom({APP_ID,roomId:$("code").value.trim(),log});
 }catch(e){
   log(e.message); 
 }
-$("me").textContent=T.selfId;
-room.onPeerJoin(id=>{log("相手が参加: "+id)});
-room.onPeerLeave(id=>{log("相手が退出"+id)});
+$("me").textContent=net.selfId;
 }
 startGame();
 </script></body></html>

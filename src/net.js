@@ -6,9 +6,12 @@ export async function joinRoom({APP_ID,roomId,log=console.log}){
     catch(e){throw new Error("ライブラリ読み込み失敗: "+e.message);
     }
     log("ライブラリ読み込み成功");
+    const selfId=T.selfId;
     let room;
     try{room=T.joinRoom({appId: APP_ID}, "room-"+roomId);}
     catch(e){throw new Error("ルーム参加に失敗: "+e.message);}
     log("ルームに参加 roomId:"+roomId);
-    return {T,room};
+    room.onPeerJoin(id=>{log("相手が参加しました id: "+id);});
+    room.onPeerLeave(id=.{log("相手が退出しました id: "+id)});
+    return {T,room,selfId};
 }
