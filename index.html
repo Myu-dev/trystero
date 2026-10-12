@@ -39,7 +39,8 @@ let net;
 try{
   net=await joinRoom({APP_ID,roomId:$("code").value.trim(),log});
 }catch(e){
-  log(e.message); 
+  log(e.message);
+  return;
 }
 $("me").textContent=net.selfId;
 }

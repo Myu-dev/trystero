@@ -12,6 +12,6 @@ export async function joinRoom({APP_ID,roomId,log=console.log}){
     catch(e){throw new Error("ルーム参加に失敗: "+e.message);}
     log("ルームに参加 roomId:"+roomId);
     room.onPeerJoin(id=>{log("相手が参加しました id: "+id);});
-    room.onPeerLeave(id=.{log("相手が退出しました id: "+id)});
+    room.onPeerLeave(id=>{log("相手が退出しました id: "+id)});
     return {T,room,selfId};
 }
