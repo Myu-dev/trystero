@@ -20,9 +20,9 @@ export async function joinRoom({APP_ID,roomId,log=console.log}){
         const [send,receive]=room.makeAction(name);
         receive((data,peerId)=>{
             try{
-                onReceive?.(data,peerId)
+                onReceive?.(data,peerId);
             }catch(e){
-                log(`${name} 受信処理エラー: `${e.message});
+                log(`${name} 受信処理エラー: ${e.message}`);
             }
         });
         events[name]=(data,to)=>{send(data,to);};
