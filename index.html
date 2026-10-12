@@ -35,8 +35,9 @@ const logEl=$("log");
 const log=m=>{const t=new Date().toTimeString().slice(0,8);logEl.textContent+=`[${t}] ${m}\n`;logEl.scrollTop=logEl.scrollHeight};
 
 async function startGame(params) {
+let room;
 try{
-  const room=await joinRoom({APP_ID,roomId:$("code").value.trim(),log});
+  room=await joinRoom({APP_ID,roomId:$("code").value.trim(),log});
 }catch(e){
   log(e.message); 
 }
